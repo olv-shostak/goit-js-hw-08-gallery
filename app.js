@@ -71,12 +71,16 @@ const closeLightboxModal = document.querySelector(
 );
 const lightboxImage = document.querySelector(".lightbox__image");
 const overlay = document.querySelector(".lightbox__overlay");
+const leftBtn = document.querySelector(".left");
+const rightBtn = document.querySelector(".right");
 const galleryMarkup = createPicturesCardsMarkup(galleryItems);
 const dataSources = [];
 
 paletteContainer.addEventListener("click", onOpenLightbox);
 closeLightboxModal.addEventListener("click", onCloseLightbox);
 overlay.addEventListener("click", onBackdropClick);
+leftBtn.addEventListener("click", onLeftBtnClick);
+rightBtn.addEventListener("click", onRightBtnClick);
 
 paletteContainer.insertAdjacentHTML("beforeend", galleryMarkup);
 
@@ -100,6 +104,7 @@ function onOpenLightbox(evt) {
   }
   lightboxModal.classList.add("is-open");
   lightboxImage.src = evt.target.dataset.source;
+  lightboxImage.alt = evt.target.alt;
 }
 
 function onCloseLightbox(evt) {
@@ -121,6 +126,24 @@ function onKeydown(evt) {
   } else if (evt.key === "ArrowRight") {
     rightClick(currentIndex);
   }
+}
+
+function onRightBtnClick (evt) {
+  const currentIndex = dataSources.indexOf(lightboxImage.src);
+  let nextIndex = currentIndex + 1;
+  if (nextIndex === dataSources.length) {
+    nextIndex = 0;
+  }
+  lightboxImage.src = dataSources[nextIndex];
+}
+
+function onLeftBtnClick (evt) {
+  const currentIndex = dataSources.indexOf(lightboxImage.src);
+  let nextIndex = currentIndex - 1;
+  if (nextIndex === -1) {
+    nextIndex = dataSources.length - 1;
+  }
+  lightboxImage.src = dataSources[nextIndex];
 }
 
 function leftClick(currentIndex) {
@@ -146,7 +169,7 @@ function onBackdropClick(evt) {
 }
 
 function onEscKeyPress(evt) {
-  if (evt.code === 'Escape') {
+  if (evt.code === "Escape") {
     onCloseLightbox();
   }
 }
