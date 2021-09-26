@@ -64,44 +64,89 @@ const galleryItems = [
   },
 ];
 
-const paletteContainer = document.querySelector('.js-gallery');
-const lightboxModal = document.querySelector('.js-lightbox');
-const closeLightboxModal = document.querySelector('[data-action="close-lightbox"]');
-const lightboxImage = document.querySelector('.lightbox__image');
+const paletteContainer = document.querySelector(".js-gallery");
+const lightboxModal = document.querySelector(".js-lightbox");
+const closeLightboxModal = document.querySelector(
+  '[data-action="close-lightbox"]'
+);
+const lightboxImage = document.querySelector(".lightbox__image");
+const overlay = document.querySelector(".lightbox__overlay");
 const galleryMarkup = createPicturesCardsMarkup(galleryItems);
+const dataSources = [];
 
-paletteContainer.addEventListener('click', onOpenLightbox);
-closeLightboxModal.addEventListener('click', onCloseLightbox)
+paletteContainer.addEventListener("click", onOpenLightbox);
+closeLightboxModal.addEventListener("click", onCloseLightbox);
+overlay.addEventListener("click", onBackdropClick);
 
-paletteContainer.insertAdjacentHTML('beforeend', galleryMarkup);
+paletteContainer.insertAdjacentHTML("beforeend", galleryMarkup);
 
 function createPicturesCardsMarkup(pictures) {
-  return pictures.map(({ preview, description }) => {
-    return `<li class="gallery__item">
+  return pictures
+    .map(({ preview, original, description }) => {
+      return `<li class="gallery__item">
     <a class="gallery__link">
-    <img class="gallery__image" src="${preview}" alt="${description}" />
+    <img class="gallery__image" data-source="${original}" src="${preview}" alt="${description}" />
     </a>
     </li>
     `;
-  }).join('');
+    })
+    .join("");
 }
 
-function onOpenLightbox(evt, galleryItems) {
-    if (!evt.target.classList.contains('gallery__image')) {
-        return;
-    }
-    console.dir(evt.target);
-    lightboxModal.classList.add('is-open');
-    // addNewSrc(galleryItems, evt)
-    // lightboxImage.src =   "https://cdn.pixabay.com/photo/2016/11/18/16/19/flowers-1835619_1280.jpg"
+function onOpenLightbox(evt) {
+  window.addEventListener("keydown", onEscKeyPress);
+  if (!evt.target.classList.contains("gallery__image")) {
+    return;
+  }
+  lightboxModal.classList.add("is-open");
+  lightboxImage.src = evt.target.dataset.source;
 }
 
 function onCloseLightbox(evt) {
-    lightboxModal.classList.remove('is-open');
+  window.removeEventListener("keydown", onEscKeyPress);
+  lightboxModal.classList.remove("is-open");
+  lightboxImage.src = "";
 }
 
-// function addNewSrc(b, c) {
-//    return b.map(({ preview, description, original }) => {
-//         console.dir(c.target);
-//     });
-// }
+galleryItems.map((picture) => {
+  return dataSources.push(picture.original);
+});
+
+document.addEventListener("keydown", onKeydown);
+
+function onKeydown(evt) {
+  const currentIndex = dataSources.indexOf(lightboxImage.src);
+  if (evt.key === "ArrowLeft") {
+    leftClick(currentIndex);
+  } else if (evt.key === "ArrowRight") {
+    rightClick(currentIndex);
+  }
+}
+
+function leftClick(currentIndex) {
+  let nextIndex = currentIndex - 1;
+  if (nextIndex === -1) {
+    nextIndex = dataSources.length - 1;
+  }
+  lightboxImage.src = dataSources[nextIndex];
+}
+
+function rightClick(currentIndex) {
+  let nextIndex = currentIndex + 1;
+  if (nextIndex === dataSources.length) {
+    nextIndex = 0;
+  }
+  lightboxImage.src = dataSources[nextIndex];
+}
+
+function onBackdropClick(evt) {
+  if (evt.currentTarget === evt.target) {
+    onCloseLightbox();
+  }
+}
+
+function onEscKeyPress(evt) {
+  if (evt.code === 'Escape') {
+    onCloseLightbox();
+  }
+}
