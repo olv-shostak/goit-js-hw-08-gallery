@@ -77,10 +77,6 @@ const galleryMarkup = createPicturesCardsMarkup(galleryItems);
 const dataSources = [];
 
 paletteContainer.addEventListener("click", onOpenLightbox);
-closeLightboxModal.addEventListener("click", onCloseLightbox);
-overlay.addEventListener("click", onBackdropClick);
-leftBtn.addEventListener("click", onLeftBtnClick);
-rightBtn.addEventListener("click", onRightBtnClick);
 
 paletteContainer.insertAdjacentHTML("beforeend", galleryMarkup);
 
@@ -99,6 +95,10 @@ function createPicturesCardsMarkup(pictures) {
 
 function onOpenLightbox(evt) {
   window.addEventListener("keydown", onEscKeyPress);
+  leftBtn.addEventListener("click", onLeftBtnClick);
+  rightBtn.addEventListener("click", onRightBtnClick);
+  overlay.addEventListener("click", onBackdropClick);
+  closeLightboxModal.addEventListener("click", onCloseLightbox);
   if (!evt.target.classList.contains("gallery__image")) {
     return;
   }
@@ -109,6 +109,10 @@ function onOpenLightbox(evt) {
 
 function onCloseLightbox(evt) {
   window.removeEventListener("keydown", onEscKeyPress);
+  leftBtn.removeEventListener("click", onLeftBtnClick);
+  rightBtn.removeEventListener("click", onRightBtnClick);
+  overlay.removeEventListener("click", onBackdropClick);
+  closeLightboxModal.removeEventListener("click", onCloseLightbox);
   lightboxModal.classList.remove("is-open");
   lightboxImage.src = "";
 }
@@ -128,7 +132,7 @@ function onKeydown(evt) {
   }
 }
 
-function onRightBtnClick (evt) {
+function onRightBtnClick(evt) {
   const currentIndex = dataSources.indexOf(lightboxImage.src);
   let nextIndex = currentIndex + 1;
   if (nextIndex === dataSources.length) {
@@ -137,7 +141,7 @@ function onRightBtnClick (evt) {
   lightboxImage.src = dataSources[nextIndex];
 }
 
-function onLeftBtnClick (evt) {
+function onLeftBtnClick(evt) {
   const currentIndex = dataSources.indexOf(lightboxImage.src);
   let nextIndex = currentIndex - 1;
   if (nextIndex === -1) {
